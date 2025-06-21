@@ -24,15 +24,16 @@
         </nav>
     </div>
 
+
     <script>
         const container = document.getElementById('product-container');
         const pagination = document.getElementById('pagination');
         const cartItems = document.getElementById('cart-items');
         let currentPage = 1;
-        
+        const limit = 12;
 
         function fetchProducts(page = 1) {
-            fetch(`https://dummyjson.com/products?limit=1000`)
+            fetch(`https://dummyjson.com/products?limit=${limit}&skip=${(page - 1) * limit}`)
                 .then(res => res.json())
                 .then(data => {
                     displayProducts(data.products);
@@ -81,8 +82,9 @@
             //To do 
         }
 
-    fetchProducts(currentPage);
-      
+        
+        fetchProducts(currentPage);
+        showCart();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
