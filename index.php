@@ -24,6 +24,18 @@
         </nav>
     </div>
 
+    <!-- Panier -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="cartCanvas">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">Votre panier</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body" id="cart-items"></div>
+    </div>
+
+    <button class="btn btn-primary position-fixed bottom-0 end-0 m-4" data-bs-toggle="offcanvas" data-bs-target="#cartCanvas">
+        Voir le panier
+    </button>
 
     <script>
         const container = document.getElementById('product-container');
@@ -79,10 +91,45 @@
         }
 
         function addToCart(product) {
-            //To do 
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const existing = cart.find(p => p.id === product.id);
+            if (existing) {
+                existing.quantity++;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            showCart();
         }
 
-        
+        function showCart() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cartItems.innerHTML = '';
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p class="text-center">Votre panier est vide.</p>';
+                return;
+            }
+            cart.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'd-flex justify-content-between align-items-center mb-3';
+                div.innerHTML = `
+                    <div>
+                        <strong>${item.title}</strong><br>
+                        ${item.price} $ x ${item.quantity}
+                    </div>
+                    <button class="btn btn-sm btn-danger" onclick="removeFromCart(${item.id})">Supprimer</button>
+                `;
+                cartItems.appendChild(div);
+            });
+        }
+
+        function removeFromCart(id) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart = cart.filter(item => item.id !== id);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            showCart();
+        }
+
         fetchProducts(currentPage);
         showCart();
     </script>
